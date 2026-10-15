@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react'
+import { useEffect, type CSSProperties, type ReactNode } from 'react'
 import { ArrowUpRight, BookOpen, Droplets, Flower2, GraduationCap, Play, Radio } from 'lucide-react'
 import {
   BHAGAVATAM_INTRO,
@@ -15,6 +15,32 @@ import {
 import { MOTTO, SITE_NAME } from '@/lib/site'
 
 const rise = (i: number) => ({ '--i': i }) as CSSProperties
+
+// Scroll reveal: cards in the same row appear one after another.
+const stagger = (i: number, perRow: number) => ({ '--d': `${(i % perRow) * 110}ms` }) as CSSProperties
+
+// Adds .is-visible to each .reveal element the first time it scrolls into view.
+function useScrollReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll('.reveal')
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      els.forEach((el) => el.classList.add('is-visible'))
+      return
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue
+          entry.target.classList.add('is-visible')
+          observer.unobserve(entry.target)
+        }
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
+    )
+    els.forEach((el) => observer.observe(el))
+    return () => observer.disconnect()
+  }, [])
+}
 
 const COURSE_COUNT = FEATURED_COURSES.length + CANTO_COURSES.length + BHAKTI_PATH.length + MORE_VIDEO_COURSES.length
 
@@ -37,7 +63,7 @@ const external = { target: '_blank', rel: 'noopener noreferrer' } as const
 
 function SectionHeading({ kicker, title, children }: { kicker: string; title: string; children?: ReactNode }) {
   return (
-    <div className="mb-6 flex flex-col items-center text-center">
+    <div className="reveal mb-6 flex flex-col items-center text-center">
       <div className="flex items-center gap-3">
         <span className="hero-flourish" aria-hidden="true" />
         <p className="-mr-[0.3em] text-xs font-semibold uppercase tracking-[0.3em] text-gold-ink">{kicker}</p>
@@ -49,9 +75,14 @@ function SectionHeading({ kicker, title, children }: { kicker: string; title: st
   )
 }
 
-function FeaturedCard({ course }: { course: FeaturedCourse }) {
+function FeaturedCard({ course, index }: { course: FeaturedCourse; index: number }) {
   return (
-    <a href={course.href} {...external} className="course-card group flex flex-col overflow-hidden rounded-2xl border">
+    <a
+      href={course.href}
+      {...external}
+      className="course-card reveal group flex flex-col overflow-hidden rounded-2xl border"
+      style={stagger(index, 3)}
+    >
       <div className="featured-band relative px-6 pb-5 pt-6">
         <span className="new-badge">New course</span>
         <p className="font-serif text-xl font-semibold text-brand-gold-soft">{course.topLabel}</p>
@@ -68,9 +99,14 @@ function FeaturedCard({ course }: { course: FeaturedCourse }) {
   )
 }
 
-function CantoCard({ course }: { course: CantoCourse }) {
+function CantoCard({ course, index }: { course: CantoCourse; index: number }) {
   return (
-    <a href={course.href} {...external} className="course-card group flex flex-col overflow-hidden rounded-2xl border">
+    <a
+      href={course.href}
+      {...external}
+      className="course-card reveal group flex flex-col overflow-hidden rounded-2xl border"
+      style={stagger(index, 3)}
+    >
       <div className="video-thumb relative aspect-video overflow-hidden">
         <img
           src={`/images/courses/canto-${course.canto}.webp`}
@@ -107,9 +143,11 @@ function CantoCard({ course }: { course: CantoCourse }) {
 
 // Landing page reached from sastranidhi.org's "Pravacana" link.
 export function HomePage() {
+  useScrollReveal()
+
   return (
     <>
-      <section className="mx-auto flex flex-col items-center text-center">
+      <section className="mx-auto flex flex-col items-center pt-5 text-center">
         <h1
           className="hero-title rise-in font-serif text-6xl font-bold leading-[1.05] tracking-tight sm:text-7xl"
           style={rise(0)}
@@ -139,13 +177,13 @@ export function HomePage() {
         </nav>
       </section>
 
-      <section id="featured" className="scroll-mt-20 pt-14">
+      <section id="featured" className="scroll-mt-20 pt-5">
         <SectionHeading kicker="From Sastranidhi" title="Featured Courses">
           Structured online learning programs in Indian Knowledge Systems, Sanskrit and scriptural studies.
         </SectionHeading>
         <div className="grid gap-5 md:grid-cols-3">
-          {FEATURED_COURSES.map((c) => (
-            <FeaturedCard key={c.title} course={c} />
+          {FEATURED_COURSES.map((c, i) => (
+            <FeaturedCard key={c.title} course={c} index={i} />
           ))}
         </div>
       </section>
@@ -155,7 +193,7 @@ export function HomePage() {
           {BHAGAVATAM_INTRO}
         </SectionHeading>
 
-        <div className="teacher-strip mx-auto mb-8 flex max-w-xl items-center gap-4 rounded-full border py-2 pl-2 pr-6">
+        <div className="teacher-strip reveal mx-auto mb-8 flex max-w-xl items-center gap-4 rounded-full border py-2 pl-2 pr-6">
           <img src={TEACHER.image} alt={TEACHER.name} className="h-14 w-14 shrink-0 rounded-full object-cover" />
           <div className="text-left">
             <p className="text-xs uppercase tracking-wider text-muted-foreground">Taught by</p>
@@ -166,8 +204,8 @@ export function HomePage() {
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {CANTO_COURSES.map((c) => (
-            <CantoCard key={c.canto} course={c} />
+          {CANTO_COURSES.map((c, i) => (
+            <CantoCard key={c.canto} course={c} index={i} />
           ))}
         </div>
       </section>
@@ -178,7 +216,7 @@ export function HomePage() {
         </SectionHeading>
         <ol className="bhakti-path grid gap-4 lg:grid-cols-5">
           {BHAKTI_PATH.map((c, i) => (
-            <li key={c.title} className="relative">
+            <li key={c.title} className="reveal relative" style={stagger(i, 5)}>
               <a href={c.href} {...external} className="course-card path-step group flex h-full flex-col items-center rounded-2xl border px-4 pb-5 pt-6 text-center">
                 <span className="path-medallion font-serif">{i + 1}</span>
                 <p className="mt-3 text-xs font-semibold uppercase tracking-[0.2em] text-gold-ink">Level {i + 1}</p>
@@ -193,10 +231,16 @@ export function HomePage() {
       <section id="more" className="scroll-mt-20 pt-16">
         <SectionHeading kicker="On the IKS-LMS" title="More Video Courses" />
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {MORE_VIDEO_COURSES.map((c) => {
+          {MORE_VIDEO_COURSES.map((c, i) => {
             const Icon = ICONS[c.icon]
             return (
-              <a key={c.title} href={c.href} {...external} className="course-card group flex items-center gap-4 rounded-2xl border p-5">
+              <a
+                key={c.title}
+                href={c.href}
+                {...external}
+                className="course-card reveal group flex items-center gap-4 rounded-2xl border p-5"
+                style={stagger(i, 4)}
+              >
                 <span className="icon-medallion">
                   <Icon className="h-6 w-6" aria-hidden="true" />
                 </span>
@@ -212,7 +256,7 @@ export function HomePage() {
       </section>
 
       <section className="pb-4 pt-16">
-        <div className="cta-band flex flex-col items-center gap-4 rounded-3xl px-6 py-10 text-center">
+        <div className="cta-band reveal flex flex-col items-center gap-4 rounded-3xl px-6 py-10 text-center">
           <h2 className="font-serif text-2xl font-bold text-white sm:text-3xl">Begin your study today</h2>
           <p className="max-w-xl font-serif text-brand-lavender-300">
             Every video course is free to join on the Sastranidhi IKS-LMS.
