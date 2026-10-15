@@ -9,19 +9,25 @@ export function Header() {
     // banner with a gold shimmer hairline (styles in index.css), independent
     // of light/dark mode — the header stays branded either way.
     <header className="site-header sticky top-0 z-40">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
-        <a href="/" className="group flex shrink-0 items-center gap-3">
-          <span className="brand-logo transition-transform duration-300 group-hover:scale-105">
+      <div className="flex h-16 items-center gap-4 px-4 sm:px-6">
+        <div className="flex shrink-0 items-center gap-3">
+          {/* The Sastranidhi logo always leads back to the main portal. */}
+          <a
+            href={SASTRANIDHI_URL}
+            className="brand-logo transition-transform duration-300 hover:scale-105"
+            aria-label="Śāstranidhi home"
+            title="Śāstranidhi home"
+          >
             <img src="/images/sastranidhi-logo.png" alt="Śāstranidhi" />
-          </span>
-          <span className="flex flex-col leading-tight">
+          </a>
+          <a href="/" className="flex flex-col leading-tight">
             <span className="font-serif text-xl font-bold tracking-wide">
               <span className="brand-text">{SITE_NAME}</span>{' '}
               <span className="brand-sanskrit" lang="sa">({SITE_NAME_SANSKRIT})</span>
             </span>
             <span className="brand-tagline">{MOTTO}</span>
-          </span>
-        </a>
+          </a>
+        </div>
 
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle className="rounded-full text-brand-lavender-200 hover:bg-white/10 hover:text-brand-gold" />
