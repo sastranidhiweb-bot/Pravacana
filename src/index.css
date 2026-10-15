@@ -56,6 +56,7 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-gold: var(--gold);
   --color-gold-foreground: var(--gold-foreground);
+  --color-gold-ink: var(--gold-ink);
   --color-ring: var(--ring);
   --color-danger: var(--danger);
   --color-danger-foreground: var(--danger-foreground);
@@ -77,6 +78,8 @@
   --accent-foreground: var(--color-brand-lavender-200);
   --gold: var(--color-brand-gold);
   --gold-foreground: var(--color-brand-violet-deepest);
+  /* Gold that stays readable as text on the page background. */
+  --gold-ink: #8a6a14;
   --ring: var(--color-brand-violet-light);
   --danger: var(--color-red-600);
   --danger-foreground: var(--color-red-50);
@@ -98,6 +101,7 @@
   --accent-foreground: var(--color-brand-violet-deepest);
   --gold: var(--color-brand-gold);
   --gold-foreground: var(--color-brand-violet-deepest);
+  --gold-ink: var(--color-brand-gold);
   --ring: var(--color-brand-gold-soft);
   --danger: var(--color-red-500);
   --danger-foreground: var(--color-red-950);
@@ -265,6 +269,62 @@
 }
 .hero-flourish.flip {
   transform: scaleX(-1);
+}
+/* Subtitle under the title: gold serif with a slow shimmer (Paripraśna-style). */
+.hero-subtitle {
+  padding-bottom: 0.1em;
+  background-image: linear-gradient(100deg, #8a6a14 0%, #b8922a 40%, #e8c34a 50%, #b8922a 60%, #8a6a14 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 12s linear infinite;
+}
+.dark .hero-subtitle {
+  background-image: linear-gradient(100deg, #e8c34a 0%, #f3dfa0 40%, #fffaf0 50%, #f3dfa0 60%, #e8c34a 100%);
+  filter: drop-shadow(0 0 14px rgb(232 195 74 / 0.3));
+}
+/* Gold rule — dot — glowing star — dot — gold rule, under the subtitle. */
+.hero-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.hero-divider-line {
+  width: clamp(4rem, 14vw, 10rem);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-brand-gold));
+  box-shadow: 0 0 6px rgb(232 195 74 / 0.6);
+}
+.hero-divider-line.flip {
+  transform: scaleX(-1);
+}
+.hero-divider-dot {
+  width: 5px;
+  height: 5px;
+  background: var(--color-brand-gold);
+  transform: rotate(45deg);
+  box-shadow: 0 0 6px rgb(232 195 74 / 0.9);
+}
+.hero-divider-star {
+  color: var(--color-brand-gold);
+  font-size: 1.35rem;
+  line-height: 1;
+  text-shadow: 0 0 12px rgb(232 195 74 / 0.95);
+  animation: twinkle 3s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { opacity: 0.6; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+@keyframes twinkle {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.85; }
+  50% { transform: scale(1.25) rotate(45deg); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-subtitle, .hero-divider-star {
+    animation: none !important;
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -610,4 +670,203 @@
   .site-footer::before, .footer-mandala {
     animation: none !important;
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* Pravacana courses                                                   */
+/* ------------------------------------------------------------------ */
+.section-chip {
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--foreground);
+  background: var(--surface);
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+.section-chip:hover {
+  border-color: var(--color-brand-gold);
+  background: var(--color-brand-violet-dark);
+  color: var(--color-brand-gold-soft);
+}
+/* Shared card: lifts with a gold edge and violet shadow on hover. */
+.course-card {
+  background: var(--surface);
+  box-shadow: 0 10px 30px -18px rgb(33 22 63 / 0.35);
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s, border-color 0.35s;
+}
+.course-card:hover {
+  transform: translateY(-4px);
+  border-color: rgb(232 195 74 / 0.75);
+  box-shadow: 0 22px 40px -18px rgb(69 33 139 / 0.5), 0 0 0 1px rgb(232 195 74 / 0.25);
+}
+/* Featured courses: violet band in the header's treatment, with a gold rule. */
+.featured-band {
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgb(232 195 74 / 0.22), transparent 55%),
+    linear-gradient(135deg, var(--color-brand-violet-deepest), var(--color-brand-violet-dark) 60%, var(--color-brand-violet-light));
+  border-bottom: 2px solid var(--color-brand-gold);
+}
+.new-badge {
+  display: inline-block;
+  margin-bottom: 0.6rem;
+  border: 1px solid rgb(232 195 74 / 0.6);
+  border-radius: 9999px;
+  padding: 0.1rem 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-brand-gold);
+}
+.card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+.dark .card-cta {
+  color: var(--color-brand-gold-soft);
+}
+.group:hover .card-cta {
+  color: var(--gold-ink);
+}
+/* Video thumbnails: darkening veil and a gold play button on hover. */
+.video-thumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgb(33 22 63 / 0.35));
+  transition: background-color 0.35s;
+}
+.group:hover .video-thumb::after {
+  background-color: rgb(33 22 63 / 0.25);
+}
+.play-button {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 9999px;
+  color: var(--color-brand-violet-deepest);
+  background: linear-gradient(135deg, #fff3c4, var(--color-brand-gold));
+  box-shadow: 0 0 0 6px rgb(232 195 74 / 0.3), 0 10px 25px rgb(33 22 63 / 0.4);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.7);
+  transition: opacity 0.3s, transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.group:hover .play-button {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+.live-badge {
+  position: absolute;
+  z-index: 1;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 9999px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: #c62f3c;
+  box-shadow: 0 4px 12px rgb(198 47 60 / 0.4);
+}
+.free-tag {
+  display: inline-block;
+  border-radius: 9999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: rgb(105 51 201 / 0.1);
+}
+.dark .free-tag {
+  color: var(--color-brand-gold-soft);
+  background: rgb(232 195 74 / 0.12);
+}
+.teacher-strip {
+  background: var(--surface);
+}
+.teacher-strip img {
+  box-shadow: 0 0 0 2px var(--color-brand-gold), 0 0 0 5px rgb(232 195 74 / 0.25);
+}
+/* Bhakti path: numbered medallions joined by a gold line on wide screens. */
+@media (min-width: 64rem) {
+  .bhakti-path li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    top: 3rem;
+    right: -1rem;
+    width: 1rem;
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-brand-gold), rgb(232 195 74 / 0.3));
+  }
+}
+.path-medallion,
+.icon-medallion {
+  display: grid;
+  place-items: center;
+  border-radius: 9999px;
+  color: var(--color-brand-gold);
+  background: linear-gradient(135deg, var(--color-brand-violet-deepest), var(--color-brand-violet-light));
+  box-shadow: 0 0 0 2px var(--color-brand-gold), 0 8px 20px -6px rgb(69 33 139 / 0.6);
+}
+.path-medallion {
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+.icon-medallion {
+  flex-shrink: 0;
+  width: 3.25rem;
+  height: 3.25rem;
+}
+.group:hover .path-medallion,
+.group:hover .icon-medallion {
+  box-shadow: 0 0 0 2px var(--color-brand-gold), 0 0 18px rgb(232 195 74 / 0.55);
+}
+/* Closing call to action, in the header's branded treatment. */
+.cta-band {
+  background:
+    radial-gradient(80% 120% at 50% 0%, rgb(232 195 74 / 0.18), transparent 60%),
+    linear-gradient(135deg, var(--color-brand-violet-deepest), var(--color-brand-violet-dark) 55%, var(--color-brand-violet-light));
+  border: 1px solid rgb(232 195 74 / 0.45);
+}
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 9999px;
+  padding: 0.65rem 1.4rem;
+  font-weight: 600;
+  color: var(--color-brand-violet-deepest);
+  background: linear-gradient(135deg, #fff3c4, var(--color-brand-gold));
+  box-shadow: 0 8px 22px -8px rgb(232 195 74 / 0.8);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -8px rgb(232 195 74 / 0.95);
+}
+html {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .course-card:hover { transform: none; }
 }

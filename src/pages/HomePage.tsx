@@ -1,132 +1,107 @@
-import { ArrowUpRight } from 'lucide-react'
-import type { CSSProperties, PointerEvent, ReactNode } from 'react'
-import { Mandala } from '@/components/layout/Mandala'
-import { Tagline } from '@/components/layout/Tagline'
+import type { CSSProperties, ReactNode } from 'react'
+import { ArrowUpRight, BookOpen, Droplets, Flower2, GraduationCap, Play, Radio } from 'lucide-react'
+import {
+  BHAGAVATAM_INTRO,
+  BHAKTI_PATH,
+  CANTO_COURSES,
+  FEATURED_COURSES,
+  LMS_COURSES_URL,
+  MORE_VIDEO_COURSES,
+  TEACHER,
+  type CantoCourse,
+  type FeaturedCourse,
+  type VideoCourse,
+} from '@/data/courses'
 import { MOTTO, SITE_NAME } from '@/lib/site'
 
-type SiteCard = {
-  title: string
-  site: string
-  // Artwork in public/images/cards/, shown whole (never cropped).
-  image: string
-  imageAlt: string
-  // Site URL, opened in a new tab — leave empty until the link is available.
-  href: string
-}
+const rise = (i: number) => ({ '--i': i }) as CSSProperties
 
-// TODO: placeholders until the final card titles, site names and links arrive.
-const CARDS: SiteCard[] = [
-  {
-    title: 'Bhagavad-Gītā',
-    site: 'Coming soon',
-    image: '/images/cards/gita-krishna-arjuna-chariot.jpg',
-    imageAlt: 'Kṛṣṇa as Arjuna’s charioteer on the battlefield of Kurukṣetra',
-    href: '',
-  },
-  {
-    title: 'Upaniṣads',
-    site: 'Coming soon',
-    image: '/images/cards/upanishads-rishi-teaching.jpg',
-    imageAlt: 'A ṛṣi teaching his students beneath a banyan tree',
-    href: '',
-  },
-  {
-    title: 'Brahma-sūtras',
-    site: 'Coming soon',
-    image: '/images/cards/brahmasutras-vyasadeva.jpg',
-    imageAlt: 'Śrīla Vyāsadeva writing in the Himalayas at Badarikāśrama',
-    href: '',
-  },
-  {
-    title: 'Bhāgavatam',
-    site: 'Coming soon',
-    image: '/images/cards/bhagavatam-krishna-flute.jpg',
-    imageAlt: 'Kṛṣṇa playing His flute in Vṛndāvana',
-    href: '',
-  },
-  {
-    title: 'Viṣṇu Purāṇa',
-    site: 'Coming soon',
-    image: '/images/cards/vishnu-ananta-sesa.jpg',
-    imageAlt: 'Lord Viṣṇu reclining on Ananta-Śeṣa with Lakṣmī, and Brahmā on the lotus',
-    href: '',
-  },
-  {
-    title: 'Ṣaṭ-sandarbhas',
-    site: 'Coming soon',
-    image: '/images/cards/sandarbhas-jiva-gosvami.jpg',
-    imageAlt: 'Śrīla Jīva Gosvāmī writing before Śrī Śrī Rādhā-Dāmodara',
-    href: '',
-  },
+const COURSE_COUNT = FEATURED_COURSES.length + CANTO_COURSES.length + BHAKTI_PATH.length + MORE_VIDEO_COURSES.length
+
+const SECTIONS = [
+  { id: 'featured', label: 'Featured courses' },
+  { id: 'bhagavatam', label: 'Bhāgavatam As It Is' },
+  { id: 'bhakti', label: 'Bhakti path' },
+  { id: 'more', label: 'More video courses' },
 ]
 
-const MAX_TILT_DEG = 12
-
-const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-// Tilt the card toward the pointer and move the glare highlight with it.
-function handleTilt(e: PointerEvent<HTMLElement>) {
-  if (e.pointerType !== 'mouse' || prefersReducedMotion()) return
-  const el = e.currentTarget
-  const rect = el.getBoundingClientRect()
-  const x = (e.clientX - rect.left) / rect.width
-  const y = (e.clientY - rect.top) / rect.height
-  el.style.setProperty('--rx', `${(0.5 - y) * MAX_TILT_DEG}deg`)
-  el.style.setProperty('--ry', `${(x - 0.5) * MAX_TILT_DEG}deg`)
-  el.style.setProperty('--gx', `${x * 100}%`)
-  el.style.setProperty('--gy', `${y * 100}%`)
-  el.style.setProperty('--px', `${x - 0.5}`)
-  el.style.setProperty('--py', `${y - 0.5}`)
+const ICONS: Record<VideoCourse['icon'], typeof BookOpen> = {
+  gita: BookOpen,
+  lotus: Flower2,
+  nectar: Droplets,
+  degree: GraduationCap,
 }
 
-function resetTilt(e: PointerEvent<HTMLElement>) {
-  e.currentTarget.style.setProperty('--rx', '0deg')
-  e.currentTarget.style.setProperty('--ry', '0deg')
-  e.currentTarget.style.setProperty('--px', '0')
-  e.currentTarget.style.setProperty('--py', '0')
-}
+// Links to the IKS-LMS open in a new tab.
+const external = { target: '_blank', rel: 'noopener noreferrer' } as const
 
-function TiltCard({ card, index }: { card: SiteCard; index: number }) {
-  const body: ReactNode = (
-    <>
-      <div className="card-art">
-        <img className="card-art-fill" src={card.image} alt="" aria-hidden="true" />
-        <img className="card-art-main" src={card.image} alt={card.imageAlt} />
-      </div>
-      <span className="card-frame" aria-hidden="true" />
-      <div className="card-text relative mt-auto pr-2">
-        <h2 className="font-serif text-2xl font-semibold text-white sm:text-[1.7rem]">{card.title}</h2>
-        <p className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <span className="text-sm font-semibold uppercase tracking-[0.16em] text-brand-gold">{card.site}</span>
-          {card.href ? (
-            <ArrowUpRight
-              className="h-4 w-4 self-center text-brand-lavender-300 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand-gold"
-              aria-hidden="true"
-            />
-          ) : card.site !== 'Coming soon' ? (
-            <span className="text-xs text-brand-lavender-300">(Coming soon)</span>
-          ) : null}
-        </p>
-      </div>
-      <span className="tilt-glare" aria-hidden="true" />
-    </>
-  )
-
-  const className = 'tilt-card group relative flex h-full min-h-48 flex-col rounded-3xl border p-6'
-  const tiltHandlers = { onPointerMove: handleTilt, onPointerLeave: resetTilt }
-
+function SectionHeading({ kicker, title, children }: { kicker: string; title: string; children?: ReactNode }) {
   return (
-    <div className="rise-in" style={{ '--i': index } as CSSProperties}>
-      {card.href ? (
-        <a href={card.href} target="_blank" rel="noopener noreferrer" className={className} {...tiltHandlers}>
-          {body}
-        </a>
-      ) : (
-        <div className={className} {...tiltHandlers}>
-          {body}
-        </div>
-      )}
+    <div className="mb-6 flex flex-col items-center text-center">
+      <div className="flex items-center gap-3">
+        <span className="hero-flourish" aria-hidden="true" />
+        <p className="-mr-[0.3em] text-xs font-semibold uppercase tracking-[0.3em] text-gold-ink">{kicker}</p>
+        <span className="hero-flourish flip" aria-hidden="true" />
+      </div>
+      <h2 className="mt-2 font-serif text-3xl font-bold text-foreground sm:text-4xl">{title}</h2>
+      {children && <p className="mt-2 max-w-3xl font-serif text-base text-muted-foreground sm:text-lg">{children}</p>}
     </div>
+  )
+}
+
+function FeaturedCard({ course }: { course: FeaturedCourse }) {
+  return (
+    <a href={course.href} {...external} className="course-card group flex flex-col overflow-hidden rounded-2xl border">
+      <div className="featured-band relative px-6 pb-5 pt-6">
+        <span className="new-badge">New course</span>
+        <p className="font-serif text-xl font-semibold text-brand-gold-soft">{course.topLabel}</p>
+      </div>
+      <div className="flex flex-1 flex-col p-6">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{course.meta}</p>
+        <h3 className="mt-2 font-serif text-xl font-semibold leading-snug text-foreground">{course.title}</h3>
+        <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{course.description}</p>
+        <span className="card-cta mt-5">
+          View course <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+        </span>
+      </div>
+    </a>
+  )
+}
+
+function CantoCard({ course }: { course: CantoCourse }) {
+  return (
+    <a href={course.href} {...external} className="course-card group flex flex-col overflow-hidden rounded-2xl border">
+      <div className="video-thumb relative aspect-video overflow-hidden">
+        <img
+          src={`/images/courses/canto-${course.canto}.webp`}
+          alt={`Śrīmad Bhāgavatam As It Is — Canto ${course.canto}: ${course.subtitle}`}
+          loading="lazy"
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+        <span className="play-button" aria-hidden="true">
+          <Play className="h-5 w-5 translate-x-px fill-current" />
+        </span>
+        {course.live && (
+          <span className="live-badge">
+            <Radio className="h-3.5 w-3.5" aria-hidden="true" /> Live
+          </span>
+        )}
+      </div>
+      <div className="flex flex-1 flex-col p-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-ink">Canto {course.canto}</p>
+        <h3 className="mt-1 font-serif text-lg font-semibold leading-snug text-foreground">{course.subtitle}</h3>
+        {course.description && (
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{course.description}</p>
+        )}
+        <div className="mt-auto flex items-center justify-between pt-4">
+          <span className="free-tag">Free · Video course</span>
+          <ArrowUpRight
+            className="h-4 w-4 text-gold-ink transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+            aria-hidden="true"
+          />
+        </div>
+      </div>
+    </a>
   )
 }
 
@@ -134,46 +109,119 @@ function TiltCard({ card, index }: { card: SiteCard; index: number }) {
 export function HomePage() {
   return (
     <>
-      <div className="cosmos" aria-hidden="true">
-        <span className="orb orb-1" />
-        <span className="orb orb-2" />
-        <span className="orb orb-3" />
-        <span className="stars" />
-        {/* Mandala + orbit rings live in the full-viewport fixed layer so they
-            are never clipped; the stage centres them on the card grid. */}
-        <div className="cosmos-stage">
-          <Mandala className="hero-mandala" />
-          <span className="hero-orbit" />
-          <span className="hero-orbit two" />
+      <section className="mx-auto flex flex-col items-center text-center">
+        <h1
+          className="hero-title rise-in font-serif text-6xl font-bold leading-[1.05] tracking-tight sm:text-7xl"
+          style={rise(0)}
+        >
+          {SITE_NAME}
+        </h1>
+        <p className="hero-subtitle rise-in mt-1 font-serif text-2xl font-semibold sm:text-3xl" style={rise(1)}>
+          {MOTTO}
+        </p>
+        <div className="hero-divider rise-in mt-3" aria-hidden="true" style={rise(2)}>
+          <span className="hero-divider-line" />
+          <span className="hero-divider-dot" />
+          <span className="hero-divider-star">✦</span>
+          <span className="hero-divider-dot" />
+          <span className="hero-divider-line flip" />
         </div>
-      </div>
+        <p className="rise-in mt-4 max-w-2xl font-serif text-base text-muted-foreground sm:text-lg" style={rise(3)}>
+          {COURSE_COUNT} courses on Śrīmad-Bhāgavatam, Bhagavad-gītā, Sanskrit and Indian Knowledge Systems —
+          self-paced, live, and free video courses on the IKS-LMS.
+        </p>
+        <nav className="rise-in mt-5 flex flex-wrap justify-center gap-2" aria-label="Course sections" style={rise(4)}>
+          {SECTIONS.map((s) => (
+            <a key={s.id} href={`#${s.id}`} className="section-chip">
+              {s.label}
+            </a>
+          ))}
+        </nav>
+      </section>
 
-      {/* Fills the viewport below the header (4rem) minus <main>'s py-8 (4rem),
-          so all six cards are visible without scrolling on desktop. */}
-      <div className="-mt-2 flex flex-col gap-6 lg:h-[calc(100svh-7.5rem)] lg:min-h-[34rem]">
-        <section className="hero-plaque mx-auto flex flex-col items-center text-center">
-          <h1 className="hero-title font-serif text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.25rem]">
-            {SITE_NAME}
-          </h1>
-          <div className="mt-1 flex items-center gap-3 sm:gap-4">
-            <span className="hero-flourish" aria-hidden="true" />
-            {/* Negative right margin cancels the trailing letter-spacing so the text stays centred. */}
-            <p className="-mr-[0.4em] font-serif text-xs font-semibold uppercase tracking-[0.4em] text-accent sm:text-sm">
-              {MOTTO}
+      <section id="featured" className="scroll-mt-20 pt-14">
+        <SectionHeading kicker="From Sastranidhi" title="Featured Courses">
+          Structured online learning programs in Indian Knowledge Systems, Sanskrit and scriptural studies.
+        </SectionHeading>
+        <div className="grid gap-5 md:grid-cols-3">
+          {FEATURED_COURSES.map((c) => (
+            <FeaturedCard key={c.title} course={c} />
+          ))}
+        </div>
+      </section>
+
+      <section id="bhagavatam" className="scroll-mt-20 pt-16">
+        <SectionHeading kicker="Video course series · Cantos 1–12" title="Śrīmad-Bhāgavatam As It Is">
+          {BHAGAVATAM_INTRO}
+        </SectionHeading>
+
+        <div className="teacher-strip mx-auto mb-8 flex max-w-xl items-center gap-4 rounded-full border py-2 pl-2 pr-6">
+          <img src={TEACHER.image} alt={TEACHER.name} className="h-14 w-14 shrink-0 rounded-full object-cover" />
+          <div className="text-left">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">Taught by</p>
+            <p className="font-serif font-semibold leading-tight text-foreground">
+              {TEACHER.name} <span className="font-normal text-muted-foreground">({TEACHER.alias})</span>
             </p>
-            <span className="hero-flourish flip" aria-hidden="true" />
           </div>
-          <Tagline className="mt-1.5 font-serif text-sm italic text-muted-foreground sm:text-base" />
-        </section>
+        </div>
 
-        <section className="flex-1">
-          <div className="grid h-full gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2">
-            {CARDS.map((card, i) => (
-              <TiltCard key={card.title} card={card} index={i} />
-            ))}
-          </div>
-        </section>
-      </div>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {CANTO_COURSES.map((c) => (
+            <CantoCard key={c.canto} course={c} />
+          ))}
+        </div>
+      </section>
+
+      <section id="bhakti" className="scroll-mt-20 pt-16">
+        <SectionHeading kicker="Five progressive programmes" title="The Bhakti Path">
+          Step by step, from first entry to the highest level of study.
+        </SectionHeading>
+        <ol className="bhakti-path grid gap-4 lg:grid-cols-5">
+          {BHAKTI_PATH.map((c, i) => (
+            <li key={c.title} className="relative">
+              <a href={c.href} {...external} className="course-card path-step group flex h-full flex-col items-center rounded-2xl border px-4 pb-5 pt-6 text-center">
+                <span className="path-medallion font-serif">{i + 1}</span>
+                <p className="mt-3 text-xs font-semibold uppercase tracking-[0.2em] text-gold-ink">Level {i + 1}</p>
+                <h3 className="mt-1 font-serif text-lg font-semibold text-foreground">{c.title}</h3>
+                <span className="free-tag mt-3">Free · Video course</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section id="more" className="scroll-mt-20 pt-16">
+        <SectionHeading kicker="On the IKS-LMS" title="More Video Courses" />
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {MORE_VIDEO_COURSES.map((c) => {
+            const Icon = ICONS[c.icon]
+            return (
+              <a key={c.title} href={c.href} {...external} className="course-card group flex items-center gap-4 rounded-2xl border p-5">
+                <span className="icon-medallion">
+                  <Icon className="h-6 w-6" aria-hidden="true" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-serif text-lg font-semibold leading-snug text-foreground">{c.title}</h3>
+                  <span className="free-tag mt-1.5">Free · Video course</span>
+                </div>
+                <ArrowUpRight className="h-4 w-4 shrink-0 text-gold-ink" aria-hidden="true" />
+              </a>
+            )
+          })}
+        </div>
+      </section>
+
+      <section className="pb-4 pt-16">
+        <div className="cta-band flex flex-col items-center gap-4 rounded-3xl px-6 py-10 text-center">
+          <h2 className="font-serif text-2xl font-bold text-white sm:text-3xl">Begin your study today</h2>
+          <p className="max-w-xl font-serif text-brand-lavender-300">
+            Every video course is free to join on the Sastranidhi IKS-LMS.
+          </p>
+          <a href={LMS_COURSES_URL} {...external} className="cta-button">
+            Browse all courses <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+          </a>
+        </div>
+      </section>
     </>
   )
 }
