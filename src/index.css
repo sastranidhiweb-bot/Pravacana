@@ -234,6 +234,83 @@
   background: radial-gradient(closest-side, var(--background) 45%, transparent);
   pointer-events: none;
 }
+/* Heading band + dome partition (as on sastranidhi.org, Paripraśna and
+   Viśleṣaka). ::before paints a full-bleed deep-violet band up to the header,
+   masked by an ellipse at the bottom so the page rises into it as a dome. The
+   gold rim is the .hero-dome SVG (components/layout/HeroDome.tsx), whose
+   ellipse matches the mask exactly: cx 50%, rx 62% of the width, ry = --dome.
+   The band reads darker than the page in both themes, and its text is the
+   same gold and lavender in both. */
+.hero-band,
+.hero-band-next {
+  --dome: clamp(44px, 5vw, 76px);
+  --dome-gap: clamp(20px, 2.4vw, 34px);
+}
+.hero-band {
+  --brand-band: linear-gradient(115deg, #1e0f47 0%, #2b1568 48%, #3b1e88 100%);
+  position: relative;
+  isolation: isolate;
+  padding-bottom: calc(var(--dome) + var(--dome-gap));
+}
+.dark .hero-band {
+  --brand-band: linear-gradient(115deg, #10072b 0%, #170b3c 48%, #1f0f4d 100%);
+}
+.hero-band::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  translate: -50% 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 15% 0%, rgb(232 196 90 / 0.14), transparent 38%),
+    radial-gradient(circle at 85% 90%, rgb(160 110 240 / 0.18), transparent 52%),
+    var(--brand-band);
+  -webkit-mask: radial-gradient(ellipse 62% var(--dome) at 50% 100%, transparent 99.5%, #000 100%);
+  mask: radial-gradient(ellipse 62% var(--dome) at 50% 100%, transparent 99.5%, #000 100%);
+}
+.hero-dome {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  height: var(--dome);
+  translate: -50% 0;
+  z-index: -1;
+  overflow: visible;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px rgb(232 195 74 / 0.45));
+}
+/* The first section's heading sits --dome-gap below the top of the curve. */
+.hero-band + .hero-band-next {
+  margin-top: calc(var(--dome-gap) - var(--dome));
+}
+/* On the band, the title and subtitle are always gold (their dark-mode look),
+   and the intro and section chips are lavender on violet. */
+.hero-band .hero-title {
+  background-image: linear-gradient(100deg, #c99a2e 0%, #f3dfa0 28%, #fffaf0 42%, #f3dfa0 56%, #e8c34a 78%, #b8922a 100%);
+  filter: drop-shadow(0 2px 0 #7a5f1c) drop-shadow(0 0 22px rgb(232 195 74 / 0.5));
+}
+.hero-band .hero-subtitle {
+  background-image: linear-gradient(100deg, #e8c34a 0%, #f3dfa0 40%, #fffaf0 50%, #f3dfa0 60%, #e8c34a 100%);
+  filter: drop-shadow(0 0 14px rgb(232 195 74 / 0.3));
+}
+.hero-intro {
+  color: rgb(236 231 247 / 0.85);
+}
+.hero-band .section-chip {
+  border-color: rgb(232 195 74 / 0.4);
+  background: rgb(255 255 255 / 0.06);
+  color: var(--color-brand-lavender-200);
+}
+.hero-band .section-chip:hover {
+  border-color: var(--color-brand-gold);
+  background: rgb(255 255 255 / 0.12);
+  color: var(--color-brand-gold-soft);
+}
 /* Title: metallic gradient lettering with a slow shimmer sweep and glow. */
 .hero-title {
   padding-bottom: 0.1em; /* keep the dot under ṣ inside the clipped gradient */

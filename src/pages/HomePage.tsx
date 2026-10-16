@@ -12,6 +12,7 @@ import {
   type FeaturedCourse,
   type VideoCourse,
 } from '@/data/courses'
+import { HeroDome } from '@/components/layout/HeroDome'
 import { MOTTO, SITE_NAME } from '@/lib/site'
 
 const rise = (i: number) => ({ '--i': i }) as CSSProperties
@@ -147,7 +148,11 @@ export function HomePage() {
 
   return (
     <>
-      <section className="mx-auto flex flex-col items-center pt-5 text-center">
+      {/* Heading on a full-bleed violet band whose domed bottom edge has a
+          gold rim, as on sastranidhi.org, Paripraśna and Viśleṣaka; the
+          course sections start under the curve (spacing in index.css). */}
+      <section className="hero-band mx-auto flex flex-col items-center pt-5 text-center">
+        <HeroDome />
         <h1
           className="hero-title rise-in font-serif text-6xl font-bold leading-[1.05] tracking-tight sm:text-7xl"
           style={rise(0)}
@@ -164,7 +169,7 @@ export function HomePage() {
           <span className="hero-divider-dot" />
           <span className="hero-divider-line flip" />
         </div>
-        <p className="rise-in mt-4 max-w-2xl font-serif text-base text-muted-foreground sm:text-lg" style={rise(3)}>
+        <p className="hero-intro rise-in mt-4 max-w-2xl font-serif text-base sm:text-lg" style={rise(3)}>
           {COURSE_COUNT} courses on Śrīmad-Bhāgavatam, Bhagavad-gītā, Sanskrit and Indian Knowledge Systems —
           self-paced, live, and free video courses on the IKS-LMS.
         </p>
@@ -177,7 +182,7 @@ export function HomePage() {
         </nav>
       </section>
 
-      <section id="featured" className="scroll-mt-20 pt-5">
+      <section id="featured" className="hero-band-next scroll-mt-20">
         <SectionHeading kicker="From Sastranidhi" title="Featured Courses">
           Structured online learning programs in Indian Knowledge Systems, Sanskrit and scriptural studies.
         </SectionHeading>
